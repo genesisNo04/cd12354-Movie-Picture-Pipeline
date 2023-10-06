@@ -59,7 +59,7 @@ jobs:
       - name: Install prettier
         run: |
           cd ./starter/frontend 
-          npm install prettier@latest --save-dev
+          npm install prettier@4.2.1 --save-dev
           npm cache clean --force
 
       - name: Run test
