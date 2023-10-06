@@ -10,9 +10,6 @@ jobs:
   lint-job:
     name: Linting
     runs-on: ubuntu-latest 
-    defaults:
-      run:
-        working-directory: frontend
 
     steps:
       - name: checkout code
@@ -31,17 +28,14 @@ jobs:
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
-        run: npm install
+        run: cd ./starter/frontend && npm install
 
       - name: Run lint check
-        run: npm run lint
+        run: cd ./starter/frontend npm run lint
 
   test-job:
     name: Testing job
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
 
     steps:
       - name: checkout code
@@ -60,17 +54,14 @@ jobs:
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
-        run: npm install
+        run: cd ./starter/frontend && npm install
 
       - name: Run test
-        run: npm run test
+        run: cd ./starter/frontend && npm run test
 
   build:
     needs: [lint-job, test-job]
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
 
     steps:
       - name: checkout code
@@ -90,9 +81,9 @@ jobs:
 
       
       - name: Install dependencies
-        run: npm install
+        run: cd ./starter/frontend && npm install
 
       - name: Run test
-        run: npm run test
+        run: cd ./starter/frontend && npm run test
 
       
