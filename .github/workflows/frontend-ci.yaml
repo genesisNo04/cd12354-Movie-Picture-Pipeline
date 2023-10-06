@@ -31,7 +31,10 @@ jobs:
         run: cd ./starter/frontend && npm install
 
       - name: Install prettier
-        run: cd ./starter/frontend && npm install prettier --save-dev
+        run: |
+          cd ./starter/frontend 
+          npm cache clean --force
+          npm install prettier --save-dev
 
       - name: Run lint check
         run: cd ./starter/frontend && npm run lint
