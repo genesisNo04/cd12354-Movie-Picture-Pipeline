@@ -10,35 +10,9 @@ jobs:
   lint-job:
     name: Linting
     runs-on: ubuntu-latest   # Use the latest Ubuntu runner
-
-    steps:
-      # Check out the code to the runner
-      - name: checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup nodejs
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Cache dependencies
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run lint check
-        run: npm run lint
-
-  test-job:
-    name: Testing job
-    runs-on: ubuntu-latest   # Use the latest Ubuntu runner
     defaults:
       run:
+        shell: bash
         working-directory: frontend
 
     steps:
@@ -59,7 +33,38 @@ jobs:
           key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Run lint check
+        run: npm run lint
+
+  test-job:
+    name: Testing job
+    runs-on: ubuntu-latest   # Use the latest Ubuntu runner
+    defaults:
+      run:
+        shell: bash
+        working-directory: frontend
+
+    steps:
+      # Check out the code to the runner
+      - name: checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup nodejs
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Run test
         run: npm run test
@@ -70,6 +75,7 @@ jobs:
 
     defaults:
       run:
+        shell: bash
         working-directory: frontend
 
     steps:
@@ -90,7 +96,7 @@ jobs:
 
       
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Run test
         run: npm run test
