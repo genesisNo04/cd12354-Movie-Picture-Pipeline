@@ -34,7 +34,6 @@ jobs:
         run: |
           cd ./starter/frontend 
           npm install prettier@2.8.8 --save-dev
-          npm cache clean --force
 
       - name: Run lint check
         run: cd ./starter/frontend && npm run lint
