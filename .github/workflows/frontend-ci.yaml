@@ -31,7 +31,7 @@ jobs:
         run: cd ./starter/frontend && npm install
 
       - name: Run lint check
-        run: cd ./starter/frontend && npm run lint
+        run: cd ./starter/frontend && npm init && npm run lint
 
   test-job:
     name: Testing job
