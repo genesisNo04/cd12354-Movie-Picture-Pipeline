@@ -59,6 +59,8 @@ jobs:
           
       - name: Install dependencies
         run: |
+          cd ./starter/backend
+          pipenv install pytest --dev
           python -m pip install --upgrade pip
           pip install pipenv
           pipenv install --dev
