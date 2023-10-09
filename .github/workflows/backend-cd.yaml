@@ -84,7 +84,8 @@ jobs:
           access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: ${{ vars.AWS_DEFAULT_REGION }}
+          region: testing
+          mask-password: false
 
       - name: Build Docker image
         run: |
