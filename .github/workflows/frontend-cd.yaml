@@ -1,4 +1,4 @@
-name: 'Frontend Continuous Integration'
+name: 'Frontend Continuous Deployment'
 on:
   workflow_dispatch:
 
@@ -100,7 +100,7 @@ jobs:
           region: ${{ vars.AWS_DEFAULT_REGION }}
 
       - name: Build Docker image
-        run: docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 -t frontend .
+        run: docker build -t frontend/frontend:latest --build-arg=REACT_APP_MOVIE_API_URL=http://xxxxxxxxxxxxxx-xxxxxxx.us-east-1.elb.amazonaws.com .
       
       - name: Tag Docker Image
         run: docker tag frontend:latest ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
@@ -112,10 +112,12 @@ jobs:
         run: |
           aws eks update-kubeconfig --name cluster --region us-east-1
       
-      - name: Deploy to Kubernetes
-        run: |
-          cd ./starter/backend/k8s
-          kubectl apply -f deployment.yml
+      # - name: Deploy to Kubernetes
+      #   run: |
+      #     cd ./starter/backend/k8s
+      #     kubectl apply -f deployment.yml
+
+          
 
 
       
