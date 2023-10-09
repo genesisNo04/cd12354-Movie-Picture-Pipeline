@@ -7,12 +7,11 @@ on:
       - main
 
 jobs:
-  lint-job:
-    name: Linting
-    runs-on: ubuntu-latest 
+  build:
+    runs-on: ubuntu-latest
 
     steps:
-      - name: checkout code
+     - name: checkout code
         uses: actions/checkout@v3
 
       - name: Setup nodejs
@@ -38,59 +37,17 @@ jobs:
       - name: Run lint check
         run: cd ./starter/frontend && npm run lint
 
-  test-job:
-    name: Testing job
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup nodejs
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
-
-      - name: Cache dependencies
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
-
-      - name: Install dependencies
-        run: cd ./starter/frontend && npm install
-
-      - name: Run test
-        run: cd ./starter/frontend && npm run test
-
-  build:
-    needs: [lint-job, test-job]
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup nodejs
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14
-      
-      - name: Cache dependencies
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
-
-      
-      - name: Install dependencies
-        run: cd ./starter/frontend && npm install
-
       - name: Run test
         run: cd ./starter/frontend && npm run test
       
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
       - name: ECR Login
         uses: aws-actions/amazon-ecr-login@v1
         with:
@@ -100,13 +57,19 @@ jobs:
           region: ${{ vars.AWS_DEFAULT_REGION }}
 
       - name: Build Docker image
-        run: docker build -t frontend/frontend:latest --build-arg=REACT_APP_MOVIE_API_URL=http://xxxxxxxxxxxxxx-xxxxxxx.us-east-1.elb.amazonaws.com .
+        run: |
+          cd ./starter/frontend
+          docker build -t frontend .
       
       - name: Tag Docker Image
-        run: docker tag frontend:latest ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+        run: |
+          cd ./starter/frontend
+          docker tag frontend:latest ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
 
       - name: Push Docker image to ECR
-        run: docker push ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+        run: |
+          cd ./starter/frontend
+          docker push ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
       
       - name: Kubeconfig Auth
         run: |
@@ -114,7 +77,7 @@ jobs:
       
       # - name: Deploy to Kubernetes
       #   run: |
-      #     cd ./starter/backend/k8s
+      #     cd ./starter/frontend/k8s
       #     kubectl apply -f deployment.yml
 
           
