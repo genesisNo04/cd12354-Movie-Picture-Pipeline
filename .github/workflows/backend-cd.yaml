@@ -1,8 +1,8 @@
-name: 'Backend Continuous Deployment'
+name: 'Backend Continuous Integration'
 on:
   workflow_dispatch:
 
-  push:
+  pull_request:
     branches:
       - main
 
@@ -69,3 +69,38 @@ jobs:
         run: |
           cd ./starter/backend 
           pipenv run test
+        
+  build:
+    needs: [lint-job, test-job]
+    runs-on: ubuntu-latest 
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+      
+      - name: ECR Login
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          region: ${{ vars.AWS_DEFAULT_REGION }}
+
+      - name: Build Docker image
+        run: docker build -t backend .
+      
+      - name: Tag Docker Image
+        run: docker tag backend:latest ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+
+      - name: Push Docker image to ECR
+        run: docker push ${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+      
+      - name: Kubeconfig Auth
+        run: |
+          aws eks update-kubeconfig --name cluster --region us-east-1
+
+      # - name: Deploy to Kubernetes
+      #   run: |
+      #     cd ./starter/backend/k8s
+      #     kubectl apply -f deployment.yml
+
