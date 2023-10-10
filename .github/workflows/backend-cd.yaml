@@ -79,5 +79,5 @@ jobs:
       - name: Deploy to Kubernetes
         run: |
           cd ./starter/backend
-          kubectl apply -f /k8s
+          kubectl apply -f ./k8s
 
