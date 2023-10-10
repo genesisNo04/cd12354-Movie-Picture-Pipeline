@@ -74,7 +74,7 @@ jobs:
       
       - name: Kubeconfig Auth
         run: |
-          aws eks update-kubeconfig --name cluster --region us-east-1
+          aws eks update-kubeconfig --name cluster --region ${{ vars.AWS_DEFAULT_REGION }}
 
       - name: Deploy to Kubernetes
         run: |
